@@ -1,45 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:menderapp/core/theme/app_color.dart';
+import 'package:menderapp/core/widgets/app_platform_widget.dart';
+
 class AppBadge extends StatelessWidget {
-  final IconData? icon;
+  final IconData? materialIcon;
+  final IconData? cupertinoIcon;
   final String text;
   final Color color;
 
   const AppBadge({
     super.key,
-    this.icon,
+    required this.materialIcon,
+    required this.cupertinoIcon,
     required this.text,
     required this.color,
-});
+  });
 
   @override
   Widget build(BuildContext context) {
+    return AppPlatformWidget(ios: _cupertino(), material: _material());
+  }
+
+  Widget _material() {
+    return _baseBadge(
+      icon: materialIcon,
+      iconColor: AppColor.white,
+    );
+  }
+
+  Widget _cupertino() {
+    return _baseBadge(
+      icon: cupertinoIcon,
+      iconColor: AppColor.white,
+    );
+  }
+
+  Widget _baseBadge({
+    IconData? icon,
+    required Color iconColor,
+  }) {
     return Container(
-      margin: EdgeInsets.only(
-        right: 5
-      ),
-      padding: EdgeInsets.symmetric(
-        vertical: 8, horizontal: 16
+      margin: const EdgeInsets.only(right: 5),
+      padding: const EdgeInsets.symmetric(
+        vertical: 6,
+        horizontal: 12,
       ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: color
+        color: color,
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: AppColor.white , size: 12,),
+          if (icon != null) ...[
+            Icon(
+              icon,
+              size: 12,
+              color: iconColor,
+            ),
+            const SizedBox(width: 4),
+          ],
           Text(
             text,
-            style: TextStyle(
+            style: const TextStyle(
+              fontSize: 12,
               color: AppColor.white,
-              fontSize: 12
+              fontWeight: FontWeight.w500,
             ),
-          )
+          ),
         ],
       ),
     );
   }
 }
-

@@ -1,19 +1,21 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:menderapp/core/theme/app_color.dart';
 import 'package:menderapp/core/widgets/app_badge.dart';
 import 'package:menderapp/core/widgets/app_button.dart';
+import 'package:menderapp/core/widgets/app_scaffold.dart';
 import 'package:menderapp/core/widgets/app_text_field.dart';
 import 'package:menderapp/features/auth/auth_controller.dart';
 
-class RegistrationLandingPage extends ConsumerStatefulWidget{
-  const RegistrationLandingPage({super.key});
+class RegistrationLandingPageSample extends ConsumerStatefulWidget{
+  const RegistrationLandingPageSample({super.key});
 
   @override
-  ConsumerState<RegistrationLandingPage> createState () => _RegistrationLandingPage();
+  ConsumerState<RegistrationLandingPageSample> createState () => _RegistrationLandingPage();
 }
 
-class _RegistrationLandingPage extends ConsumerState<RegistrationLandingPage> {
+class _RegistrationLandingPage extends ConsumerState<RegistrationLandingPageSample> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -32,23 +34,21 @@ class _RegistrationLandingPage extends ConsumerState<RegistrationLandingPage> {
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(authControllerProvider);
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('Register'),),
-      body: Padding(padding: const EdgeInsetsGeometry.all(16),
+    return AppScaffold(
+      title: "Registration Page",
       child: SingleChildScrollView(
         child: Column(
           children: [
             AppTextField(controller: _nameController, name: 'name', inputType: TextInputType.text, placeholder: 'Enter your message here'),
             const SizedBox(height: 24),
             AppButton(text: 'Continue with Apple ID',
-                color: AppColor.danger,
-                icon: Icon(Icons.apple, color: AppColor.white,),
-                isLoading: isLoading,
-                onPressed: () {
-                  ref.read(authControllerProvider.notifier)
-                      .register(name: _nameController.text);
-                },
+              color: AppColor.danger,
+              icon: Icon(Icons.apple, color: AppColor.white,),
+              isLoading: isLoading,
+              onPressed: () {
+                ref.read(authControllerProvider.notifier)
+                    .register(name: _nameController.text);
+              },
             ),
             const SizedBox(height: 24),
             AppButton(text: 'Email Address',
@@ -63,27 +63,30 @@ class _RegistrationLandingPage extends ConsumerState<RegistrationLandingPage> {
             Row(
               children: [
                 AppBadge(
-                  icon: Icons.add,
+                  materialIcon: Icons.handshake_rounded,
+                  cupertinoIcon: CupertinoIcons.hand_draw_fill,
                   color: AppColor.info,
                   text: 'Follow',
                 ),
 
                 AppBadge(
-                  icon: Icons.handshake,
-                  color: AppColor.primary,
+                  materialIcon: Icons.handshake_rounded,
+                  cupertinoIcon: CupertinoIcons.hand_draw_fill,
+                  color: AppColor.info,
                   text: 'Help',
                 ),
 
                 AppBadge(
-                  icon: Icons.warning,
-                  color: AppColor.danger,
+                  materialIcon: Icons.handshake_rounded,
+                  cupertinoIcon: CupertinoIcons.hand_draw_fill,
+                  color: AppColor.info,
                   text: 'Urgent',
                 )
               ],
             )
           ],
         ),
-      ),),
+      )
     );
   }
 }
