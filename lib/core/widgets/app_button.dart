@@ -7,18 +7,26 @@ import 'package:menderapp/core/theme/app_color.dart';
 import 'package:menderapp/core/widgets/app_platform_widget.dart';
 
 class AppButton extends StatelessWidget {
-  final String text;
+  final Widget content;
   final VoidCallback? onPressed;
   final bool isLoading;
-  final Color color;
+  final Color? color;
   final Widget? icon;
+  final Widget? iconMaterial;
+  final Widget? iconCupertino;
+  final Widget? trailing;
+  final Widget? leading;
 
   const AppButton({
     super.key,
-    required this.text,
+    required this.content,
     required this.onPressed,
-    required this.color,
+    this.color = AppColor.primary,
     this.icon,
+    this.iconMaterial,
+    this.iconCupertino,
+    this.trailing,
+    this.leading,
     this.isLoading = false,
   });
 
@@ -65,14 +73,15 @@ class AppButton extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (icon != null) ...[
-          icon!,
-          const SizedBox(width: 8),
+        if(leading != null) ... [
+          leading!,
+          const SizedBox(width: 30,)
         ],
-        Text(
-          text,
-          style: const TextStyle(color: Colors.white),
-        ),
+        content,
+        if(leading != null) ... [
+          const SizedBox(width: 30,),
+          leading!,
+        ],
       ],
     );
   }

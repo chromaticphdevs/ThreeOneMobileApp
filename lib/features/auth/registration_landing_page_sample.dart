@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:menderapp/core/theme/app_color.dart';
 import 'package:menderapp/core/widgets/app_badge.dart';
 import 'package:menderapp/core/widgets/app_button.dart';
@@ -42,24 +43,7 @@ class _RegistrationLandingPage extends ConsumerState<RegistrationLandingPageSamp
           children: [
             AppTextField(controller: _nameController, name: 'name', inputType: TextInputType.text, placeholder: 'Enter your message here'),
             const SizedBox(height: 24),
-            AppButton(text: 'Continue with Apple ID',
-              color: AppColor.danger,
-              icon: Icon(Icons.apple, color: AppColor.white,),
-              isLoading: loginIsLoading,
-              onPressed: () {
-                ref.read(authControllerProvider.notifier)
-                    .login();
-              },
-            ),
             const SizedBox(height: 24),
-            AppButton(text: 'Email Address',
-              color: AppColor.info,
-              isLoading: isLoading,
-              onPressed: () {
-                ref.read(authControllerProvider.notifier)
-                    .register(name: _nameController.text);
-              },
-            ),
             SizedBox(height: 24,),
             Row(
               children: [
@@ -84,7 +68,11 @@ class _RegistrationLandingPage extends ConsumerState<RegistrationLandingPageSamp
                   text: 'Urgent',
                 )
               ],
-            )
+            ),
+            SizedBox(height: 24,),
+            AppButton(content: Text("Login Page"), onPressed: () {
+              context.push('/login');
+            }, color: AppColor.info)
           ],
         ),
       )
