@@ -11,4 +11,20 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return const Placeholder();
   }
+
+/**
+ * Login with Phone
+ */
+
+/**
+ * Login With Email
+ */
+
+/**
+ * Email Verification
+ */
+
+/**
+ * SMS Verification
+ */
 }

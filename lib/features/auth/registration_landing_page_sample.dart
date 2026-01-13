@@ -34,6 +34,7 @@ class _RegistrationLandingPage extends ConsumerState<RegistrationLandingPageSamp
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(authControllerProvider);
+    final loginIsLoading = ref.watch(authControllerProvider);
     return AppScaffold(
       title: "Registration Page",
       child: SingleChildScrollView(
@@ -44,10 +45,10 @@ class _RegistrationLandingPage extends ConsumerState<RegistrationLandingPageSamp
             AppButton(text: 'Continue with Apple ID',
               color: AppColor.danger,
               icon: Icon(Icons.apple, color: AppColor.white,),
-              isLoading: isLoading,
+              isLoading: loginIsLoading,
               onPressed: () {
                 ref.read(authControllerProvider.notifier)
-                    .register(name: _nameController.text);
+                    .login();
               },
             ),
             const SizedBox(height: 24),

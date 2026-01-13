@@ -18,7 +18,9 @@ class AuthController extends StateNotifier<bool>{
 
   Future<void> login() async {
     state = true;
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 10));
     state = false;
   }
+
+
 }
