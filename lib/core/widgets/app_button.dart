@@ -37,7 +37,6 @@ class AppButton extends StatelessWidget {
 
   Widget _material() {
     return SizedBox(
-      height: AppButtonSize.regularHeight,
       width: double.infinity,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
@@ -54,7 +53,6 @@ class AppButton extends StatelessWidget {
 
   Widget _cupertino() {
     return SizedBox(
-      height: AppButtonSize.regularHeight,
       width: double.infinity,
       child: CupertinoButton(
         onPressed: isLoading ? null : onPressed,

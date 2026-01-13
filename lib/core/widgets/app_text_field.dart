@@ -57,7 +57,7 @@ class AppTextField extends StatelessWidget {
           padding: const EdgeInsets.only(left: 8),
           child: Icon(
             cupertinoPrefixIcon,
-            size: 18,
+            size: 12,
             color: CupertinoColors.systemGrey,
           ),
         ),
@@ -67,7 +67,7 @@ class AppTextField extends StatelessWidget {
           padding: const EdgeInsets.only(right: 8),
           child: Icon(
             cupertinoSuffixIcon,
-            size: 18,
+            size: 12,
             color: CupertinoColors.systemGrey,
           ),
         ),
@@ -93,8 +93,8 @@ class AppTextField extends StatelessWidget {
         suffixIcon:
         materialSuffixIcon != null ? Icon(materialSuffixIcon) : null,
         contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 16,
+          vertical: 8,
+          horizontal: 10,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

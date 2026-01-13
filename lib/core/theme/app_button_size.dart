@@ -1,3 +1,3 @@
 class AppButtonSize {
-  static const regularHeight = 52.0;
+  // static const regularHeight = ;
 }
