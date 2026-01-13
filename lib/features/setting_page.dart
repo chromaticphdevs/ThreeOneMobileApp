@@ -6,6 +6,7 @@ import 'package:menderapp/core/theme/app_color.dart';
 import 'package:menderapp/core/widgets/app_button.dart';
 import 'package:menderapp/core/widgets/app_scaffold.dart';
 import 'package:menderapp/core/widgets/app_text_field.dart';
+import 'package:menderapp/features/common_widgets/sidebar.dart';
 
 class SettingPage extends ConsumerStatefulWidget{
   const SettingPage({super.key});
@@ -18,25 +19,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-
-    final ListView sidebar = ListView(
-      padding: EdgeInsets.zero,
-      children: [
-        DrawerHeader(
-          decoration: BoxDecoration(color: AppColor.grey),
-          child: Text('Menu'),
-        ),
-        ListTile(
-          title: Text("Setting"),
-          onTap: () {},
-        ),
-        ListTile(
-          title: Text("Videos"),
-          onTap: () {},
-        )
-      ],
-    );
-    return AppScaffold(sidebar: sidebar, child: CarouselSlider(
+    return AppScaffold(sidebar: buildSidebar(context), title: "Settings Page", child: CarouselSlider(
       options: CarouselOptions(
         height: screenHeight,
         viewportFraction: 1,
@@ -45,6 +28,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
       ),
       items: [
         Container(
+          padding: EdgeInsetsGeometry.all(10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -62,6 +46,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
         ),
 
         Container(
+          padding: EdgeInsetsGeometry.all(10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -82,6 +67,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
         ),
 
         Container(
+          padding: EdgeInsetsGeometry.all(10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

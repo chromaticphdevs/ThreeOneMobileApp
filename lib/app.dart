@@ -34,15 +34,15 @@ class MyApp extends ConsumerWidget{
           onSurface: Colors.black,
         ),
         appBarTheme: const AppBarTheme(
-          iconTheme: IconThemeData(color: Colors.white),
+          iconTheme: IconThemeData(color: Colors.black),
           actionsIconTheme: IconThemeData(color: Colors.white),
           titleTextStyle: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
 
       darkTheme: ThemeData(
@@ -53,10 +53,10 @@ class MyApp extends ConsumerWidget{
           onSurface: Colors.white,
         ),
         appBarTheme: const AppBarTheme(
-          iconTheme: IconThemeData(color: Colors.white),
-          actionsIconTheme: IconThemeData(color: Colors.white),
+          iconTheme: IconThemeData(color: Colors.black),
+          actionsIconTheme: IconThemeData(color: Colors.black),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
 
       themeMode: ThemeMode.system,
