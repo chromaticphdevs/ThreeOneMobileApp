@@ -17,9 +17,23 @@ Widget buildSidebar(BuildContext context) {
         },
       ),
       ListTile(
+        title: Text("Landing Page"),
+        onTap: () {
+          context.go('/landing-page'); // GoRouter navigation
+          Navigator.of(context).pop(); // Close the drawer
+        },
+      ),
+      ListTile(
         title: Text("Video Capturing"),
         onTap: () {
           context.go('/video-capturing'); // GoRouter navigation
+          Navigator.of(context).pop(); // Close the drawer
+        },
+      ),
+      ListTile(
+        title: Text("Videos"),
+        onTap: () {
+          context.go('/video-list'); // GoRouter navigation
           Navigator.of(context).pop(); // Close the drawer
         },
       ),

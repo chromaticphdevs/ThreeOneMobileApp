@@ -8,29 +8,28 @@ class VideoRecorderPage extends StatefulWidget {
   const VideoRecorderPage({super.key});
 
   @override
-  _VideoRecorderPageState createState() => _VideoRecorderPageState();
+  State<VideoRecorderPage> createState() => _VideoRecorderPageState();
 }
 
 class _VideoRecorderPageState extends State<VideoRecorderPage> {
   CameraController? _controller;
-  late List<CameraDescription> _cameras;
   bool _isRecording = false;
+  late CameraDescription _frontCamera;
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    _initCamera();
   }
 
-  Future<void> _initializeCamera() async {
-    _cameras = await availableCameras();
-    // Select front camera
-    final frontCamera = _cameras.firstWhere(
+  Future<void> _initCamera() async {
+    final cameras = await availableCameras();
+    _frontCamera = cameras.firstWhere(
           (camera) => camera.lensDirection == CameraLensDirection.front,
     );
 
     _controller = CameraController(
-      frontCamera,
+      _frontCamera,
       ResolutionPreset.high,
       enableAudio: true,
     );
@@ -40,18 +39,22 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
     setState(() {});
   }
 
+  Future<String> _getFilePath() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final filePath = path.join(
+      dir.path,
+      'video_${DateTime.now().millisecondsSinceEpoch}.mp4',
+    );
+    return filePath;
+  }
+
   Future<void> _startRecording() async {
     if (_controller == null || _controller!.value.isRecordingVideo) return;
 
-    final Directory extDir = await getTemporaryDirectory();
-    final String filePath =
-    path.join(extDir.path, '${DateTime.now().millisecondsSinceEpoch}.mp4');
-
+    final filePath = await _getFilePath();
     try {
       await _controller!.startVideoRecording();
-      setState(() {
-        _isRecording = true;
-      });
+      setState(() => _isRecording = true);
     } catch (e) {
       print('Error starting video recording: $e');
     }
@@ -61,12 +64,18 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
     if (_controller == null || !_controller!.value.isRecordingVideo) return;
 
     try {
+      // Stop recording and get XFile
       final XFile file = await _controller!.stopVideoRecording();
-      setState(() {
-        _isRecording = false;
-      });
-      print('Video saved to ${file.path}');
-      // You can now play the video or upload it
+      setState(() => _isRecording = false);
+
+      // Move file to documents folder
+      final savePath = await _getFilePath();
+      await file.saveTo(savePath);
+
+      print('Video saved at: $savePath'); // <-- check here
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Video saved at: $savePath')),
+      );
     } catch (e) {
       print('Error stopping video recording: $e');
     }
@@ -85,7 +94,7 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Video Recorder')),
+      appBar: AppBar(title: const Text('Record Video')),
       body: Stack(
         children: [
           CameraPreview(_controller!),

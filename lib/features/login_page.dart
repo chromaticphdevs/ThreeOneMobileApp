@@ -34,8 +34,8 @@ class _LoginPage extends ConsumerState<LoginPage>{
             placeholder: "Password",),
           SizedBox(height: 40,),
           AppButton(content: AppButtonText(text: "Login"), onPressed: () {
-            context.push('/setting');
-          })
+            context.push('/landing-page');
+          }, isFullWidth: true,)
         ],
       ),
     );

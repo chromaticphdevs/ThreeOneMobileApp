@@ -10,6 +10,7 @@ class AppScaffold extends StatelessWidget {
   final Color? backgroundColor;
   final EdgeInsetsGeometry padding;
   final Widget? sidebar;
+  final Widget? floatingActionButton;
 
   const AppScaffold({
     super.key,
@@ -19,7 +20,8 @@ class AppScaffold extends StatelessWidget {
     this.leading,
     this.backgroundColor,
     this.padding = const EdgeInsetsGeometry.all(16),
-    this.sidebar
+    this.sidebar,
+    this.floatingActionButton
   });
 
   @override
@@ -79,6 +81,7 @@ class AppScaffold extends StatelessWidget {
       body: SafeArea(
         child: Padding(padding: padding, child: child),
       ),
+      floatingActionButton: floatingActionButton,
     );
   }
 

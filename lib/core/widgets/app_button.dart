@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class AppButton extends StatelessWidget {
   final Widget? iconCupertino;
   final Widget? trailing;
   final Widget? leading;
-
+  final bool isFullWidth;
   const AppButton({
     super.key,
     required this.content,
@@ -28,6 +29,7 @@ class AppButton extends StatelessWidget {
     this.trailing,
     this.leading,
     this.isLoading = false,
+    this.isFullWidth = false
   });
 
   @override
@@ -36,7 +38,7 @@ class AppButton extends StatelessWidget {
   }
 
   Widget _material() {
-    return SizedBox(
+    return isFullWidth ? SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
@@ -48,6 +50,15 @@ class AppButton extends StatelessWidget {
         ),
         child: _content(isCupertino: false),
       ),
+    ) : ElevatedButton(
+      onPressed: isLoading ? null : onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadiusGeometry.circular(8),
+        ),
+      ),
+      child: _content(isCupertino: false),
     );
   }
 

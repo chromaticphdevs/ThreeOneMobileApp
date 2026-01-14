@@ -1,11 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <uses-feature android:name="android.hardware.camera.front" android:required="true" />
+    <uses-feature android:name="android.hardware.microphone" android:required="true" />
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
-        android:label="menderapp"
+        android:label="ThreeOne"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <uses-permission android:name="android.permission.CAMERA"/>
-        <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
