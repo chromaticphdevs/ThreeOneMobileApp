@@ -23,13 +23,13 @@ Widget buildSidebar(BuildContext context) {
           Navigator.of(context).pop(); // Close the drawer
         },
       ),
-      ListTile(
-        title: Text("Video Capturing"),
-        onTap: () {
-          context.go('/video-capturing'); // GoRouter navigation
-          Navigator.of(context).pop(); // Close the drawer
-        },
-      ),
+      // ListTile(
+      //   title: Text("Video Capturing"),
+      //   onTap: () {
+      //     context.go('/video-capturing'); // GoRouter navigation
+      //     Navigator.of(context).pop(); // Close the drawer
+      //   },
+      // ),
       ListTile(
         title: Text("Videos"),
         onTap: () {

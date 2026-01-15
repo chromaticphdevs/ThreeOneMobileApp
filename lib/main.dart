@@ -15,10 +15,18 @@ void main() async{
   await Hive.openBox(Storage.promotionSetting);
 
   final videoRecordingSetting = Hive.box(Storage.videoRecordingSetting);
+  final credentialSetting = Hive.box(Storage.userCredentials);
 
-  // if(videoRecordingSetting.containsKey('maxRecordingDuration')) {
-  //   await videoRecordingSetting.put('maxRecordingDuration', 15);
-  //   await videoRecordingSetting.put('preparationDuration', 5);
-  // }
+  if(videoRecordingSetting.containsKey('maxRecordingDuration')) {
+    await videoRecordingSetting.put('maxRecordingDuration', 15);
+    await videoRecordingSetting.put('preparationDuration', 5);
+  }
+
+  if(credentialSetting.isEmpty) {
+    await credentialSetting.put('credential', {
+      'username': 'admin',
+      'password' : '12345'
+    });
+  }
   runApp(const ProviderScope(child: MyApp()));
 }

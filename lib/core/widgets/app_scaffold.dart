@@ -11,6 +11,8 @@ class AppScaffold extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final Widget? sidebar;
   final Widget? floatingActionButton;
+  final Widget? bottomNavigationBar;
+  final bool? resizeToAvoidBottomInset;
 
   const AppScaffold({
     super.key,
@@ -21,7 +23,9 @@ class AppScaffold extends StatelessWidget {
     this.backgroundColor,
     this.padding = const EdgeInsetsGeometry.all(16),
     this.sidebar,
-    this.floatingActionButton
+    this.floatingActionButton,
+    this.bottomNavigationBar,
+    this.resizeToAvoidBottomInset = true
   });
 
   @override
@@ -62,6 +66,7 @@ class AppScaffold extends StatelessWidget {
 
   Widget _materialScaffold(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       backgroundColor: backgroundColor,
       appBar: title == null
           ? null
@@ -82,6 +87,7 @@ class AppScaffold extends StatelessWidget {
         child: Padding(padding: padding, child: child),
       ),
       floatingActionButton: floatingActionButton,
+      bottomNavigationBar: bottomNavigationBar,
     );
   }
 
