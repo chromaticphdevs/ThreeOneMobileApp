@@ -5,8 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
 import 'package:menderapp/core/configurations/storage.dart';
-import 'package:menderapp/core/theme/app_asset_files.dart';
-import 'package:menderapp/core/widgets/app_button.dart';
 import 'package:menderapp/core/widgets/app_scaffold.dart';
 import 'package:menderapp/features/common_widgets/sidebar.dart';
 import 'package:menderapp/features/services/image_service.dart';

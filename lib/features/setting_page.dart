@@ -73,49 +73,6 @@ class _SettingPage extends ConsumerState<SettingPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
-                  "Video Storage and Duration Settings",
-                  style: AppTextStyles.formTitle,
-                ),
-                SizedBox(height: 30),
-                AppFormGroup(
-                  label: "Video Duration",
-                  child: AppTextField(
-                    controller: _videoDurationController,
-                    name: "video_duration",
-                    inputType: TextInputType.number,
-                    placeholder: "Video Duration",
-                  ),
-                ),
-
-                AppFormGroup(
-                  label: "Google Drive link",
-                  child: AppTextField(
-                    controller: _googleDriveLinkController,
-                    name: "google_drive_link",
-                    inputType: TextInputType.text,
-                    placeholder: "Google Drive link",
-                  ),
-                ),
-                SizedBox(height: 15),
-                Divider(),
-                AppFormGroup(
-                  label: '',
-                  child: AppButton(
-                    content: Text("Save"),
-                    onPressed: _saveVideoSettings,
-                    isFullWidth: true,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          Container(
-            padding: EdgeInsetsGeometry.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
                 Text("Promotion Page", style: AppTextStyles.formTitle),
                 SizedBox(height: 30),
                 AppFormGroup(
@@ -217,15 +174,15 @@ class _SettingPage extends ConsumerState<SettingPage> {
                       ),
                       AppButton(
                         content: Text("Show Current"),
-                          onPressed: () async {
-                            final currentPhoto = await imageService.loadPhoto(
-                              Storage.companyBranding,
-                              'companyLogo',
-                            );
-                            setState(() {
-                              previewCompanyLogo = currentPhoto!;
-                            });
-                          }
+                        onPressed: () async {
+                          final currentPhoto = await imageService.loadPhoto(
+                            Storage.companyBranding,
+                            'companyLogo',
+                          );
+                          setState(() {
+                            previewCompanyLogo = currentPhoto!;
+                          });
+                        },
                       ),
                     ],
                   ),
@@ -286,6 +243,49 @@ class _SettingPage extends ConsumerState<SettingPage> {
                   content: Text("Save"),
                   onPressed: _saveBranding,
                   isFullWidth: true,
+                ),
+              ],
+            ),
+          ),
+
+          Container(
+            padding: EdgeInsetsGeometry.all(10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  "Video Storage and Duration Settings",
+                  style: AppTextStyles.formTitle,
+                ),
+                SizedBox(height: 30),
+                AppFormGroup(
+                  label: "Video Duration",
+                  child: AppTextField(
+                    controller: _videoDurationController,
+                    name: "video_duration",
+                    inputType: TextInputType.number,
+                    placeholder: "Video Duration",
+                  ),
+                ),
+
+                AppFormGroup(
+                  label: "Google Drive link",
+                  child: AppTextField(
+                    controller: _googleDriveLinkController,
+                    name: "google_drive_link",
+                    inputType: TextInputType.text,
+                    placeholder: "Google Drive link",
+                  ),
+                ),
+                SizedBox(height: 15),
+                Divider(),
+                AppFormGroup(
+                  label: '',
+                  child: AppButton(
+                    content: Text("Save"),
+                    onPressed: _saveVideoSettings,
+                    isFullWidth: true,
+                  ),
                 ),
               ],
             ),
@@ -472,16 +472,14 @@ class _SettingPage extends ConsumerState<SettingPage> {
     final username = _usernameController.text;
     final password = _passwordController.text;
 
-    if(username.isNotEmpty && username.length > 4) {
-      Map<String,String> userCredential = {};
+    if (username.isNotEmpty && username.length > 4) {
+      Map<String, String> userCredential = {};
       userCredential['username'] = username;
-      if(password.isNotEmpty && password.length > 4) {
+      if (password.isNotEmpty && password.length > 4) {
         userCredential['password'] = password;
         _passwordController.text = '';
       }
       await credentialSetting.put('credential', userCredential);
     }
-
-
   }
 }
