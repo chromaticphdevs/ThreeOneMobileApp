@@ -224,9 +224,16 @@ class _SettingPage extends ConsumerState<SettingPage> {
                               Storage.companyBranding,
                               'companyLogo',
                             );
-                            setState(() {
-                              previewCompanyLogo = currentPhoto!;
-                            });
+
+                            if(currentPhoto != null) {
+                              setState(() {
+                                if(previewCompanyLogo == null) {
+                                  previewCompanyLogo = currentPhoto;
+                                } else {
+                                  previewCompanyLogo = null;
+                                }
+                              });
+                            }
                           },
                         ),
                       ],
@@ -350,13 +357,26 @@ class _SettingPage extends ConsumerState<SettingPage> {
       "googleDrinkLink",
       _googleDriveLinkController.text,
     );
+
+    if(!mounted) return;
+    Fluttertoast.showToast(
+      msg: 'Video Setting Saved',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 2,
+      backgroundColor: Colors.black87,
+      textColor: Colors.white,
+      fontSize: 14.0,
+    );
   }
 
   void _savePromotionSetting() async {
     await promotionSetting.put("textOfTheDay", _textOfTheDayController.text);
     await _savePictureOfTheDay();
+    if(!mounted) return;
+
     Fluttertoast.showToast(
-      msg: 'Photo saved successfully',
+      msg: 'Saved Promotion Details',
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       timeInSecForIosWeb: 2,
@@ -477,8 +497,22 @@ class _SettingPage extends ConsumerState<SettingPage> {
         Storage.companyBranding,
         'companyLogo',
       );
-      _removeCompanyLogo();
+
+      setState(() {
+        previewCompanyLogo = null;
+      });
     }
+
+    if(!mounted) return;
+    Fluttertoast.showToast(
+      msg: 'Saved Branding Details',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 2,
+      backgroundColor: Colors.black87,
+      textColor: Colors.white,
+      fontSize: 14.0,
+    );
   }
 
   Future<void> _selectCompanyLogo() async {
@@ -498,15 +532,36 @@ class _SettingPage extends ConsumerState<SettingPage> {
   Future<void> _saveCredentials() async {
     final username = _usernameController.text;
     final password = _passwordController.text;
+    Map<String, String> userCredential = {};
+    String localMessage = "";
 
     if (username.isNotEmpty && username.length > 4) {
-      Map<String, String> userCredential = {};
       userCredential['username'] = username;
       if (password.isNotEmpty && password.length > 4) {
         userCredential['password'] = password;
         _passwordController.text = '';
+      } else {
+        localMessage = "Invalid Password";
       }
-      await credentialSetting.put('credential', userCredential);
+    } else {
+      localMessage = "Invalid Username";
     }
+
+    if(localMessage.isNotEmpty) {
+      await credentialSetting.put('credential', userCredential);
+      if(!mounted) return;
+    } else {
+      localMessage = "Credentials Updated";
+    }
+
+    Fluttertoast.showToast(
+      msg: localMessage,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 2,
+      backgroundColor: Colors.black87,
+      textColor: Colors.white,
+      fontSize: 14.0,
+    );
   }
 }

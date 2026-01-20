@@ -32,6 +32,8 @@ class _LoginPage extends ConsumerState<LoginPage>{
 
   File? previewLogo;
 
+  String? _message = '';
+
   @override
   void initState() {
     // TODO: implement initState
@@ -53,36 +55,48 @@ class _LoginPage extends ConsumerState<LoginPage>{
               color: AppColor.white
           ),),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-              width: 150,
-              height: 150,
-              child: previewLogo == null ? SizedBox.shrink() :
-              Image(image: FileImage(previewLogo!))
-          ),
-          SizedBox(height: 20,),
-          AppTextField(controller: _usernameController, name: "username", inputType: TextInputType.text,
-          placeholder: "Username",),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+                width: 150,
+                height: 150,
+                child: previewLogo == null ? SizedBox.shrink() :
+                Image(image: FileImage(previewLogo!))
+            ),
+            message(),
+            SizedBox(height: 20,),
+            AppTextField(controller: _usernameController, name: "username", inputType: TextInputType.text,
+              placeholder: "Username",),
 
-          SizedBox(height: 20,),
-          AppTextField(controller: _passwordController, name: "password", inputType: TextInputType.text,
-            placeholder: "Password", obscureText: true,),
-          SizedBox(height: 40,),
-          AppButton(content: AppButtonText(text: "Login"), onPressed: _login, isFullWidth: true,)
-        ],
+            SizedBox(height: 20,),
+            AppTextField(controller: _passwordController, name: "password", inputType: TextInputType.text,
+              placeholder: "Password", obscureText: true,),
+            SizedBox(height: 40,),
+            AppButton(content: AppButtonText(text: "Login"), onPressed: _login, isFullWidth: true,)
+          ],
+        ),
       ),
     );
   }
 
   void _login() {
     final credential = userCredentialSetting.get('credential');
+    String messageLocal = '';
     if(_usernameController.text == credential['username']) {
       if(_passwordController.text == credential['password']) {
         context.push('/setting');
+      } else {
+        messageLocal = "Invalid Password";
       }
+    } else {
+      messageLocal = "Username not found";
     }
+    setState(() {
+      _message = messageLocal;
+    });
+
     _passwordController.text = '';
   }
 
@@ -94,5 +108,18 @@ class _LoginPage extends ConsumerState<LoginPage>{
     setState(() {
       previewLogo = logo;
     });
+  }
+
+  Widget message() {
+    if(_message == '') {
+      return SizedBox.shrink();
+    }
+    return Container(
+      padding: EdgeInsetsGeometry.all(10),
+      child: Text("$_message", style: TextStyle(
+        fontSize: 15,
+        color: AppColor.danger
+      ),),
+    );
   }
 }

@@ -7,6 +7,7 @@ import 'package:menderapp/core/widgets/app_button.dart';
 import 'package:menderapp/core/widgets/app_button_text.dart';
 import 'package:menderapp/core/widgets/app_scaffold.dart';
 import 'package:menderapp/features/common_widgets/sidebar.dart';
+import 'package:menderapp/features/services/image_service.dart';
 import 'package:menderapp/features/video_player_page.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -19,6 +20,7 @@ class VideoListPage extends ConsumerStatefulWidget{
 
 class _VideoListPage extends ConsumerState<VideoListPage> {
   List<FileSystemEntity> _videos = [];
+  ImageService imageService = ImageService();
 
   @override
   void initState() {
@@ -55,6 +57,7 @@ class _VideoListPage extends ConsumerState<VideoListPage> {
                 leading: const Icon(Icons.videocam),
                 title: Text(file.path.split('/').last),
                 onTap: () => _playVideo(File(file.path)),
+                onLongPress: ()=> _confirmDelete(context, File(file.path), index),
               );
             },
           ))
@@ -72,6 +75,46 @@ class _VideoListPage extends ConsumerState<VideoListPage> {
     final files =
     dir.listSync().where((f) => f.path.endsWith('.mp4')).toList();
     setState(() => _videos = files);
+  }
+
+
+  Future<void> _confirmDelete(BuildContext context, File file, int index) async {
+    if (!context.mounted) return;
+
+    final bool shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Delete item?'),
+        content: const Text(
+          'This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    ) ??
+        false;
+
+    if (!shouldDelete || !context.mounted) return;
+
+    _deleteItem(file, index);
+  }
+
+  Future<void> _deleteItem(File file, int index) async{
+    await imageService.deleteFile(file);
+    setState(() {
+      _videos.removeAt(index);
+    });
   }
 }
 
