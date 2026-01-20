@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:menderapp/core/theme/app_color.dart';
 import 'package:menderapp/router.dart';
 import 'dart:io';
 
@@ -27,6 +28,12 @@ class MyApp extends ConsumerWidget{
 
     return MaterialApp.router(
       theme: ThemeData(
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColor.primary,
+            foregroundColor: AppColor.white
+          )
+        ),
         brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.white,

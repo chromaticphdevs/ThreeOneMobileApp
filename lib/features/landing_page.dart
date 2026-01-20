@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
 import 'package:menderapp/core/configurations/storage.dart';
+import 'package:menderapp/core/theme/app_color.dart';
 import 'package:menderapp/core/widgets/app_scaffold.dart';
 import 'package:menderapp/features/common_widgets/sidebar.dart';
 import 'package:menderapp/features/services/image_service.dart';
@@ -22,26 +23,35 @@ class _LandingPage extends ConsumerState<LandingPage> {
 
   final _imageService = ImageService();
   File? _pictureOfTheDay;
+  File? _companyWallpaper;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _loadPictureOfTheDay();
+    _loadWallpaper();
   }
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      wallpaper: _companyWallpaper,
       title: "Landing Page",
       sidebar: buildSidebar(context),
       bottomNavigationBar: Container(
+        alignment: Alignment.center,
         padding: EdgeInsetsGeometry.all(5),
-        height: 30,
-        color: Colors.red,
-        child: Text(brandingSetting.get('companyName', defaultValue: 'Company Name is not set'), textAlign: TextAlign.center),
+        height: 50,
+        color: AppColor.primary,
+        child: Text(brandingSetting.get('companyName', defaultValue: 'Company Name is not set'),
+            textAlign: TextAlign.center,
+        style: TextStyle(
+          color: AppColor.white
+        ),),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
+          final deviceHeight = constraints.maxHeight;
           return SingleChildScrollView(
             child: ConstrainedBox(
               constraints: BoxConstraints(
@@ -52,34 +62,51 @@ class _LandingPage extends ConsumerState<LandingPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: constraints.maxWidth,
-                    child: Text(
-                      promotionSetting
-                          .get(
+
+                  if(promotionSetting.get('textOfTheDay') != '') ... [
+                    Container(
+                      alignment: Alignment.center,
+                      height: deviceHeight * .15,
+                      child: SizedBox(
+                        width: constraints.maxWidth,
+                        child: Text(
+                          promotionSetting
+                              .get(
                             'textOfTheDay',
                             defaultValue: "Default text of the day!!",
                           )
-                          .toString(),
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w700,
+                              .toString(),
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                  Container(
+                    alignment: Alignment.topCenter,
+                    height: deviceHeight * .60,
+                    child: SizedBox(
+                        width: constraints.maxWidth,
+                        child: _pictureOfTheDay == null ? SizedBox.shrink() :
+                        Image(image: FileImage(_pictureOfTheDay!), fit: BoxFit.cover,)
                     ),
                   ),
-                  SizedBox(height: 10),
                   SizedBox(
-                    width: constraints.maxWidth,
-                    child: _pictureOfTheDay == null ? SizedBox.shrink() :
-                      Image(image: FileImage(_pictureOfTheDay!))
+                    height: deviceHeight * .05,
                   ),
-                  SizedBox(height: 10),
-                  InkWell(
-                    child: CircleAvatar(radius: 50, child: Text("Start")),
-                    onTap: () {
-                      context.push('/video-capturing');
-                    },
+                  Container(
+                    alignment: Alignment.center,
+                    height: deviceHeight * .20,
+                    child: InkWell(
+                      child: CircleAvatar(radius: 50, child: Text("Start"),
+                        backgroundColor: AppColor.primary, foregroundColor: AppColor.white,),
+                      onTap: () {
+                        context.push('/video-capturing');
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -96,6 +123,14 @@ class _LandingPage extends ConsumerState<LandingPage> {
 
     setState(() {
       _pictureOfTheDay = pictureOfTheDay;
+    });
+  }
+
+  Future<void> _loadWallpaper () async {
+    final pictureOfTheDay = await _imageService.loadPhoto(Storage.promotionSetting, 'companyWallpaper');
+    if(pictureOfTheDay == null) return;
+    setState(() {
+      _companyWallpaper = pictureOfTheDay;
     });
   }
 }

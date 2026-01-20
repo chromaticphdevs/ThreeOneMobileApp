@@ -60,276 +60,283 @@ class _SettingPage extends ConsumerState<SettingPage> {
       resizeToAvoidBottomInset: false,
       sidebar: buildSidebar(context),
       title: "Settings",
-      child: CarouselSlider(
-        options: CarouselOptions(
-          height: screenHeight,
-          viewportFraction: 1,
-          enlargeCenterPage: false,
-          scrollPhysics: BouncingScrollPhysics(),
-        ),
-        items: [
-          Container(
-            padding: EdgeInsetsGeometry.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text("Promotion Page", style: AppTextStyles.formTitle),
-                SizedBox(height: 30),
-                AppFormGroup(
-                  label: "Word of the day",
-                  child: AppTextField(
-                    controller: _textOfTheDayController,
-                    name: "text_of_the_day",
-                    inputType: TextInputType.text,
-                    placeholder: "Text of the day",
-                  ),
-                ),
-
-                AppFormGroup(
-                  label: "Upload picture of the day",
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AppButton(
-                        content: Text("Upload Photo"),
-                        onPressed: _selectPictureOfTheDayPhoto,
-                      ),
-
-                      AppButton(
-                        content: Text("Show Current"),
-                        onPressed: () async {
-                          final promotionSetting = Hive.box(
-                            Storage.promotionSetting,
-                          );
-
-                          final getInfo = await promotionSetting.get(
-                            'pictureOfTheDay',
-                          );
-                          final currentPhoto = await imageService.loadPhoto(
-                            Storage.promotionSetting,
-                            'pictureOfTheDay',
-                          );
-                          setState(() {
-                            previewPictureOfTheDayImage = currentPhoto!;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-
-                if (previewPictureOfTheDayImage != null) ...[
-                  SizedBox(
-                    width: 150,
-                    height: 150,
-                    child: Image(
-                      image: FileImage(previewPictureOfTheDayImage!),
+      child: SingleChildScrollView(
+        child: CarouselSlider(
+          options: CarouselOptions(
+            height: screenHeight,
+            viewportFraction: 1,
+            enlargeCenterPage: false,
+            scrollPhysics: BouncingScrollPhysics(),
+          ),
+          items: [
+            Container(
+              padding: EdgeInsetsGeometry.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text("Promotion Page", style: AppTextStyles.formTitle),
+                  SizedBox(height: 30),
+                  AppFormGroup(
+                    label: "Word of the day",
+                    child: AppTextField(
+                      controller: _textOfTheDayController,
+                      name: "text_of_the_day",
+                      inputType: TextInputType.text,
+                      placeholder: "Text of the day",
                     ),
                   ),
-                  TextButton(
-                    onPressed: _removePictureOfTheDayImage,
-                    child: Text("Remove"),
+
+                  AppFormGroup(
+                    label: "Upload picture of the day",
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AppButton(
+                          content: Text("Upload Photo"),
+                          onPressed: _selectPictureOfTheDayPhoto,
+                        ),
+
+                        AppButton(
+                          content: Text("Show Current"),
+                          onPressed: () async {
+                            final currentPhoto = await imageService.loadPhoto(
+                              Storage.promotionSetting,
+                              'pictureOfTheDay',
+                            );
+                            if(currentPhoto != null) {
+                              setState(() {
+                                if(previewPictureOfTheDayImage == null) {
+                                  previewPictureOfTheDayImage = currentPhoto;
+                                } else {
+                                  previewPictureOfTheDayImage = null;
+                                }
+                              });
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (previewPictureOfTheDayImage != null) ...[
+                    SizedBox(
+                      width: 150,
+                      height: 150,
+                      child: Image(
+                        image: FileImage(previewPictureOfTheDayImage!),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _removePictureOfTheDayImage,
+                      child: Text("Remove"),
+                    ),
+                  ],
+
+                  AppFormGroup(
+                    label: "Company Wallpaper",
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AppButton(
+                          content: Text("Upload Wallpaper"),
+                          onPressed: _selectWallpaper,
+                        ),
+                        AppButton(
+                          content: Text("Show Current"),
+                          onPressed: () async {
+                            final currentPhoto = await imageService.loadPhoto(
+                              Storage.promotionSetting,
+                              'companyWallpaper',
+                            );
+
+                            if(currentPhoto != null) {
+                              setState(() {
+                                if(previewWallpaper == null) {
+                                  previewWallpaper = currentPhoto;
+                                } else {
+                                  previewWallpaper = null;
+                                }
+                              });
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (previewWallpaper != null) ...[
+                    SizedBox(
+                      width: 150,
+                      height: 150,
+                      child: Image(
+                        image: FileImage(previewWallpaper!),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _removeWallpaper,
+                      child: Text("Remove"),
+                    ),
+                  ],
+
+                  Divider(),
+                  AppFormGroup(
+                    label: '',
+                    child: AppButton(
+                      content: Text("Save"),
+                      onPressed: _savePromotionSetting,
+                      isFullWidth: true,
+                    ),
                   ),
                 ],
-                Divider(),
-                AppFormGroup(
-                  label: '',
-                  child: AppButton(
+              ),
+            ),
+
+            Container(
+              padding: EdgeInsetsGeometry.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text("Branding", style: AppTextStyles.formTitle),
+                  SizedBox(height: 30),
+                  AppFormGroup(
+                    label: "Company Name",
+                    child: AppTextField(
+                      controller: _companyNameController,
+                      name: "company_name",
+                      inputType: TextInputType.text,
+                      placeholder: "Company Name",
+                    ),
+                  ),
+
+                  SizedBox(height: 30),
+
+                  AppFormGroup(
+                    label: "Company Logo",
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AppButton(
+                          content: Text("Upload Logo"),
+                          onPressed: _selectCompanyLogo,
+                        ),
+                        AppButton(
+                          content: Text("Show Current"),
+                          onPressed: () async {
+                            final currentPhoto = await imageService.loadPhoto(
+                              Storage.companyBranding,
+                              'companyLogo',
+                            );
+                            setState(() {
+                              previewCompanyLogo = currentPhoto!;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  if (previewCompanyLogo != null) ...[
+                    SizedBox(
+                      width: 150,
+                      height: 150,
+                      child: Image(image: FileImage(previewCompanyLogo!)),
+                    ),
+                    TextButton(
+                      onPressed: _removeCompanyLogo,
+                      child: Text("Remove"),
+                    ),
+                  ],
+                  Divider(),
+                  AppButton(
                     content: Text("Save"),
-                    onPressed: _savePromotionSetting,
+                    onPressed: _saveBranding,
                     isFullWidth: true,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          Container(
-            padding: EdgeInsetsGeometry.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text("Branding", style: AppTextStyles.formTitle),
-                SizedBox(height: 30),
-                AppFormGroup(
-                  label: "Company Name",
-                  child: AppTextField(
-                    controller: _companyNameController,
-                    name: "company_name",
-                    inputType: TextInputType.text,
-                    placeholder: "Company Name",
+            Container(
+              padding: EdgeInsetsGeometry.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "Video Storage and Duration Settings",
+                    style: AppTextStyles.formTitle,
                   ),
-                ),
-
-                SizedBox(height: 30),
-
-                AppFormGroup(
-                  label: "Company Logo",
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AppButton(
-                        content: Text("Upload Logo"),
-                        onPressed: _selectCompanyLogo,
-                      ),
-                      AppButton(
-                        content: Text("Show Current"),
-                        onPressed: () async {
-                          final currentPhoto = await imageService.loadPhoto(
-                            Storage.companyBranding,
-                            'companyLogo',
-                          );
-                          setState(() {
-                            previewCompanyLogo = currentPhoto!;
-                          });
-                        },
-                      ),
-                    ],
+                  SizedBox(height: 30),
+                  AppFormGroup(
+                    label: "Video Duration",
+                    child: AppTextField(
+                      controller: _videoDurationController,
+                      name: "video_duration",
+                      inputType: TextInputType.number,
+                      placeholder: "Video Duration",
+                    ),
                   ),
-                ),
 
-                if (previewCompanyLogo != null) ...[
-                  SizedBox(
-                    width: 150,
-                    height: 150,
-                    child: Image(image: FileImage(previewCompanyLogo!)),
+                  AppFormGroup(
+                    label: "Google Drive link",
+                    child: AppTextField(
+                      controller: _googleDriveLinkController,
+                      name: "google_drive_link",
+                      inputType: TextInputType.text,
+                      placeholder: "Google Drive link",
+                    ),
                   ),
-                  TextButton(
-                    onPressed: _removeCompanyLogo,
-                    child: Text("Remove"),
+                  SizedBox(height: 15),
+                  Divider(),
+                  AppFormGroup(
+                    label: '',
+                    child: AppButton(
+                      content: Text("Save"),
+                      onPressed: _saveVideoSettings,
+                      isFullWidth: true,
+                    ),
                   ),
                 ],
-
-                AppFormGroup(
-                  label: "Company Wallpaper",
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AppButton(
-                        content: Text("Upload Wallpaper"),
-                        onPressed: _selectWallpaper,
-                      ),
-                      AppButton(
-                        content: Text("Show Current"),
-                        onPressed: () async {
-                          final currentPhoto = await imageService.loadPhoto(
-                            Storage.companyBranding,
-                            'companyWallpaper',
-                          );
-                          setState(() {
-                            previewWallpaper = currentPhoto!;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-
-                if (previewWallpaper != null) ...[
-                  SizedBox(
-                    width: 150,
-                    height: 150,
-                    child: Image(image: FileImage(previewWallpaper!)),
-                  ),
-                  TextButton(
-                    onPressed: _removeWallpaper,
-                    child: Text("Remove"),
-                  ),
-                ],
-
-                SizedBox(height: 15),
-                Divider(),
-                AppButton(
-                  content: Text("Save"),
-                  onPressed: _saveBranding,
-                  isFullWidth: true,
-                ),
-              ],
+              ),
             ),
-          ),
 
-          Container(
-            padding: EdgeInsetsGeometry.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  "Video Storage and Duration Settings",
-                  style: AppTextStyles.formTitle,
-                ),
-                SizedBox(height: 30),
-                AppFormGroup(
-                  label: "Video Duration",
-                  child: AppTextField(
-                    controller: _videoDurationController,
-                    name: "video_duration",
-                    inputType: TextInputType.number,
-                    placeholder: "Video Duration",
+            Container(
+              padding: EdgeInsetsGeometry.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text("Credentials", style: AppTextStyles.formTitle),
+                  SizedBox(height: 30),
+                  AppFormGroup(
+                    label: "Username",
+                    child: AppTextField(
+                      controller: _usernameController,
+                      name: "username",
+                      inputType: TextInputType.text,
+                      placeholder: "Username",
+                    ),
                   ),
-                ),
 
-                AppFormGroup(
-                  label: "Google Drive link",
-                  child: AppTextField(
-                    controller: _googleDriveLinkController,
-                    name: "google_drive_link",
-                    inputType: TextInputType.text,
-                    placeholder: "Google Drive link",
+                  AppFormGroup(
+                    label: "Password",
+                    child: AppTextField(
+                      obscureText: true,
+                      controller: _passwordController,
+                      name: "password",
+                      inputType: TextInputType.text,
+                      placeholder: "password",
+                    ),
                   ),
-                ),
-                SizedBox(height: 15),
-                Divider(),
-                AppFormGroup(
-                  label: '',
-                  child: AppButton(
+
+                  SizedBox(height: 15),
+                  Divider(),
+                  AppButton(
                     content: Text("Save"),
-                    onPressed: _saveVideoSettings,
+                    onPressed: _saveCredentials,
                     isFullWidth: true,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-
-          Container(
-            padding: EdgeInsetsGeometry.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text("Credentials", style: AppTextStyles.formTitle),
-                SizedBox(height: 30),
-                AppFormGroup(
-                  label: "Username",
-                  child: AppTextField(
-                    controller: _usernameController,
-                    name: "username",
-                    inputType: TextInputType.text,
-                    placeholder: "Username",
-                  ),
-                ),
-
-                AppFormGroup(
-                  label: "Password",
-                  child: AppTextField(
-                    obscureText: true,
-                    controller: _passwordController,
-                    name: "password",
-                    inputType: TextInputType.text,
-                    placeholder: "password",
-                  ),
-                ),
-
-                SizedBox(height: 15),
-                Divider(),
-                AppButton(
-                  content: Text("Save"),
-                  onPressed: _saveCredentials,
-                  isFullWidth: true,
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -398,35 +405,64 @@ class _SettingPage extends ConsumerState<SettingPage> {
   }
 
   Future<void> _savePictureOfTheDay() async {
-    if (previewPictureOfTheDayImage == null) return;
-    final isImageSaved = await imageService.saveImage(
-      previewPictureOfTheDayImage,
-      Storage.promotionSetting,
-      'pictureOfTheDay',
-    );
+    if (previewPictureOfTheDayImage != null) {
+      final isImageSaved = await imageService.saveImage(
+        previewPictureOfTheDayImage,
+        Storage.promotionSetting,
+        'pictureOfTheDay',
+      );
 
-    if (isImageSaved != null) {
-      _removePictureOfTheDayImage();
-      print('Image saved');
+      if (isImageSaved != null) {
+        setState(() {
+          previewPictureOfTheDayImage = null;
+        });
+      }
+    }
+
+    if (previewWallpaper != null) {
+      final isWallPaperSaved = await imageService.saveImage(
+        previewWallpaper,
+        Storage.promotionSetting,
+        'companyWallpaper',
+      );
+
+      if(isWallPaperSaved != null) {
+        setState(() {
+          previewWallpaper = null;
+        });
+      }
     }
   }
 
-  void _removePictureOfTheDayImage() {
-    setState(() {
-      previewPictureOfTheDayImage = null;
-    });
+  Future<void> _removePictureOfTheDayImage() async {
+    if(previewPictureOfTheDayImage != null) {
+      imageService.deleteFile(previewPictureOfTheDayImage);
+      promotionSetting.delete('pictureOfTheDay');
+
+      setState(() {
+        previewPictureOfTheDayImage = null;
+      });
+    }
   }
 
-  void _removeCompanyLogo() {
-    setState(() {
-      previewCompanyLogo = null;
-    });
+  Future<void> _removeCompanyLogo() async {
+    if(previewCompanyLogo != null) {
+      imageService.deleteFile(previewCompanyLogo);
+      promotionSetting.delete('companyLogo');
+      setState(() {
+        previewCompanyLogo = null;
+      });
+    }
   }
 
   void _removeWallpaper() {
-    setState(() {
-      previewWallpaper = null;
-    });
+    if(previewWallpaper != null) {
+      imageService.deleteFile(previewWallpaper);
+      promotionSetting.delete('companyWallpaper');
+      setState(() {
+        previewWallpaper = null;
+      });
+    }
   }
 
   Future<void> _saveBranding() async {
@@ -442,15 +478,6 @@ class _SettingPage extends ConsumerState<SettingPage> {
         'companyLogo',
       );
       _removeCompanyLogo();
-    }
-
-    if (previewWallpaper != null) {
-      final isWallPaperSaved = await imageService.saveImage(
-        previewWallpaper,
-        Storage.companyBranding,
-        'companyWallpaper',
-      );
-      _removeWallpaper();
     }
   }
 

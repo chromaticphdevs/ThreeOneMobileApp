@@ -13,7 +13,7 @@ class AppScaffold extends StatelessWidget {
   final Widget? floatingActionButton;
   final Widget? bottomNavigationBar;
   final bool? resizeToAvoidBottomInset;
-
+  final File? wallpaper;
   const AppScaffold({
     super.key,
     this.title,
@@ -25,7 +25,8 @@ class AppScaffold extends StatelessWidget {
     this.sidebar,
     this.floatingActionButton,
     this.bottomNavigationBar,
-    this.resizeToAvoidBottomInset = true
+    this.resizeToAvoidBottomInset = true,
+    this.wallpaper,
   });
 
   @override
@@ -42,27 +43,30 @@ class AppScaffold extends StatelessWidget {
       navigationBar: title == null
           ? null
           : CupertinoNavigationBar(
-        leading: leading ?? (sidebar != null ? GestureDetector(
-          onTap: () {
-            // Implement your iOS-style sidebar here, e.g., showModalBottomSheet
-            showCupertinoModalPopup(
-              context: context,
-              builder: (_) => Container(
-                height: 300,
-                color: CupertinoColors.systemBackground,
-                child: sidebar,
-              ),
-            );
-          },
-          child: Icon(CupertinoIcons.bars),
-        ) : null),
-        middle: Text(title!),
-        trailing: trailing,
-      ),
+              leading:
+                  leading ??
+                  (sidebar != null
+                      ? GestureDetector(
+                          onTap: () {
+                            // Implement your iOS-style sidebar here, e.g., showModalBottomSheet
+                            showCupertinoModalPopup(
+                              context: context,
+                              builder: (_) => Container(
+                                height: 300,
+                                color: CupertinoColors.systemBackground,
+                                child: sidebar,
+                              ),
+                            );
+                          },
+                          child: Icon(CupertinoIcons.bars),
+                        )
+                      : null),
+              middle: Text(title!),
+              trailing: trailing,
+            ),
       child: Padding(padding: padding, child: child),
     );
   }
-
 
   Widget _materialScaffold(BuildContext context) {
     return Scaffold(
@@ -71,25 +75,40 @@ class AppScaffold extends StatelessWidget {
       appBar: title == null
           ? null
           : AppBar(
-        title: Text(title!),
-        leading: leading ?? (sidebar != null ? Builder(
-          builder: (context) {
-            return IconButton(
-              icon: Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-            );
-          },
-        ) : null),
-        actions: trailing != null ? [trailing!] : null,
-      ),
+              title: Text(title!),
+              leading:
+                  leading ??
+                  (sidebar != null
+                      ? Builder(
+                          builder: (context) {
+                            return IconButton(
+                              icon: Icon(Icons.menu),
+                              onPressed: () =>
+                                  Scaffold.of(context).openDrawer(),
+                            );
+                          },
+                        )
+                      : null),
+              actions: trailing != null ? [trailing!] : null,
+            ),
       drawer: sidebar != null ? Drawer(child: sidebar!) : null,
-      body: SafeArea(
-        child: Padding(padding: padding, child: child),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: wallpaper != null
+            ? BoxDecoration(
+                image: DecorationImage(
+                  image: FileImage(wallpaper!),
+                  fit: BoxFit.cover,
+                ),
+              )
+            : BoxDecoration(color: Colors.white),
+        child: SafeArea(
+          child: Padding(padding: EdgeInsetsGeometry.all(20), child: child),
+        ),
       ),
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: bottomNavigationBar,
     );
   }
-
-
 }

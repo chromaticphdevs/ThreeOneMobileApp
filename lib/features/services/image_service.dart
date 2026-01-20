@@ -51,8 +51,15 @@ class ImageService {
         await oldFile.delete();
       }
     }
-
     return savedFile;
+  }
+
+  Future<void> deleteFile(File? file) async {
+    if(file != null) {
+      if(await file.exists()) {
+        await file.delete();
+      }
+    }
   }
 
 }
