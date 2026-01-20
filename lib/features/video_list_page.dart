@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:menderapp/core/widgets/app_button.dart';
 import 'package:menderapp/core/widgets/app_button_text.dart';
@@ -10,7 +11,7 @@ import 'package:menderapp/features/common_widgets/sidebar.dart';
 import 'package:menderapp/features/services/image_service.dart';
 import 'package:menderapp/features/video_player_page.dart';
 import 'package:path_provider/path_provider.dart';
-
+import 'package:path/path.dart' as pathx;
 class VideoListPage extends ConsumerStatefulWidget{
   const VideoListPage({super.key});
 
@@ -40,9 +41,8 @@ class _VideoListPage extends ConsumerState<VideoListPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AppButton(content: AppButtonText(text: "Sync"), onPressed: () {}),
-              AppButton(content: AppButtonText(text: "Empty"), onPressed: () {}),
-              AppButton(content: AppButtonText(text: "New"), onPressed: () {}),
+              AppButton(content: AppButtonText(text: "Sync"), onPressed: _sync),
+              AppButton(content: AppButtonText(text: "Empty"), onPressed: _empty),
             ],
           ),
           SizedBox(height: 5,),
@@ -115,6 +115,33 @@ class _VideoListPage extends ConsumerState<VideoListPage> {
     setState(() {
       _videos.removeAt(index);
     });
+  }
+
+  Future<void> _empty() async{
+    final dir = await getApplicationDocumentsDirectory();
+    if (await dir.exists()) {
+      await for (final entity in dir.list(recursive: true)) {
+        if(entity is File) {
+          if(pathx.extension(entity.path.toLowerCase()) == '.mp4') {
+            try {
+              await entity.delete(recursive: true);
+            } catch (_) {}
+          }
+        }
+      }
+    }
+  }
+
+  Future<void> _sync() async{
+    Fluttertoast.showToast(
+      msg: "Only Available in paid version",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 2,
+      backgroundColor: Colors.black87,
+      textColor: Colors.white,
+      fontSize: 14.0,
+    );
   }
 }
 

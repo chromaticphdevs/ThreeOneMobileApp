@@ -406,7 +406,6 @@ class _SettingPage extends ConsumerState<SettingPage> {
         .toString();
 
     _usernameController.text = credentialSetting.get('username').toString();
-    // _passwordController.text = credentialSetting.get('password').toString();
   }
 
   Future<XFile?> _initImagePicker() async {
@@ -548,11 +547,18 @@ class _SettingPage extends ConsumerState<SettingPage> {
     }
 
     if(localMessage.isNotEmpty) {
-      await credentialSetting.put('credential', userCredential);
+      await credentialSetting.put('credentials', userCredential);
       if(!mounted) return;
     } else {
       localMessage = "Credentials Updated";
     }
+
+    print([
+      _passwordController.text,
+      _usernameController.text,
+      userCredential
+    ]);
+
 
     Fluttertoast.showToast(
       msg: localMessage,

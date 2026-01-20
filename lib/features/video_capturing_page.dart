@@ -199,7 +199,7 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
       if(!mounted) return;
 
       final messenger = ScaffoldMessenger.of(context);
-      messenger.showSnackBar(SnackBar(content: Text('Video saved at:\n$savePath')));
+      messenger.showSnackBar(SnackBar(content: Text('Video Saved')));
       Future.delayed(const Duration(seconds: 2));
 
       if(!mounted) return;

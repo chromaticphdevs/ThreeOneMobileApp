@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
 import 'package:menderapp/core/configurations/storage.dart';
@@ -12,6 +13,7 @@ import 'package:menderapp/core/widgets/app_scaffold.dart';
 import 'package:menderapp/core/widgets/app_text_field.dart';
 import 'package:menderapp/features/common_widgets/sidebar.dart';
 import 'package:menderapp/features/services/image_service.dart';
+import 'package:path_provider/path_provider.dart';
 
 class LandingPage extends ConsumerStatefulWidget {
   const LandingPage({super.key});
@@ -27,8 +29,10 @@ class _LandingPage extends ConsumerState<LandingPage> {
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-
   final _imageService = ImageService();
+
+  List<FileSystemEntity> _videos = [];
+
   File? _pictureOfTheDay;
   File? _companyWallpaper;
   File? previewLogo;
@@ -40,6 +44,7 @@ class _LandingPage extends ConsumerState<LandingPage> {
     _loadPictureOfTheDay();
     _loadWallpaper();
     loadImages();
+    _loadVideos();
   }
   @override
   Widget build(BuildContext context) {
@@ -135,6 +140,18 @@ class _LandingPage extends ConsumerState<LandingPage> {
                       child: CircleAvatar(radius: 50, child: Text("Start"),
                         backgroundColor: AppColor.primary, foregroundColor: AppColor.white,),
                       onTap: () {
+                        if(_videos.length > 5) {
+                          Fluttertoast.showToast(
+                            msg: "App version is currently limited to save 5 videos",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 2,
+                            backgroundColor: Colors.black87,
+                            textColor: Colors.white,
+                            fontSize: 14.0,
+                          );
+                          return;
+                        }
                         context.push('/video-capturing');
                       },
                     ),
@@ -174,6 +191,7 @@ class _LandingPage extends ConsumerState<LandingPage> {
     }
     passwordController.text = '';
   }
+
   Future<void> loadImages() async {
     final logo = await _imageService.loadPhoto(Storage.companyBranding, 'companyLogo');
     if(logo == null) return;
@@ -181,5 +199,12 @@ class _LandingPage extends ConsumerState<LandingPage> {
     setState(() {
       previewLogo = logo;
     });
+  }
+
+  Future<void> _loadVideos() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final files =
+    dir.listSync().where((f) => f.path.endsWith('.mp4')).toList();
+    setState(() => _videos = files);
   }
 }
