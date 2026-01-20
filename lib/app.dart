@@ -34,6 +34,25 @@ class MyApp extends ConsumerWidget{
             foregroundColor: AppColor.white
           )
         ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: AppColor.grey01,
+          hintStyle: const TextStyle(color: Colors.grey),
+          labelStyle: const TextStyle(color: Colors.black),
+          floatingLabelStyle: const TextStyle(color: Colors.black),
+
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.deepOrange),
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(color: Colors.black)
+        ),
         brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.white,

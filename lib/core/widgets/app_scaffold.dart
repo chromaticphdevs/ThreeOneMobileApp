@@ -102,7 +102,7 @@ class AppScaffold extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               )
-            : BoxDecoration(color: Colors.white),
+            : BoxDecoration(color: backgroundColor),
         child: SafeArea(
           child: Padding(padding: EdgeInsetsGeometry.all(20), child: child),
         ),

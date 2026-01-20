@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:flutter/rendering.dart';
+import 'package:go_router/go_router.dart';
+import 'package:menderapp/core/theme/app_text_styles.dart';
 import 'package:path/path.dart' as path;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +24,10 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
   CameraController? _cameraController;
   late CameraDescription _frontCamera;
 
-  bool _isRecording = true;
+  bool _isRecording = false;
   bool _isRecordingFinished = false;
+
+  Color? backgroundColor = Colors.white;
   Timer? _timer;
   int _secondsLeft = 0;
   String _textDisplayCameraOverlay = '';
@@ -41,7 +46,6 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
     _cameraController?.dispose();
     super.dispose();
   }
-
 
   Future<void> _initializeCamera() async {
     final cameras = await availableCameras();
@@ -62,77 +66,58 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return AppScaffold(
+      backgroundColor: backgroundColor,
       title: "Video Recording page",
       sidebar: buildSidebar(context),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 30),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  height: 500,
-                  color: AppColor.info,
-                  child: _cameraBuilder(),
-                ),
-                Align(
-                  alignment: Alignment.center,
-                  child: _textDisplayCameraOverlay != ''
-                      ? Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      "$_textDisplayCameraOverlay",
-                      style: const TextStyle(
-                          color: Colors.white, fontSize: 40),
-                    ),
-                  )
-                      : const SizedBox.shrink(),
-                )
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final height = constraints.maxHeight;
+          return Column(
+            children: [
+              if(_isRecording) ... [
+                Text("$_secondsLeft", style: AppTextStyles.formTitle,)
               ],
-            ),
-            SizedBox(height: 30),
-            Text("$_secondsLeft"),
-
-            !_isRecordingFinished ? SizedBox.shrink() :
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                wTextButton(
-                  onPressed: () {},
-                  text: "Save",
-                  color: AppColor.primary,
-                ),
-                wTextButton(
-                  onPressed: () {},
-                  text: "Redo",
-                  color: AppColor.primary,
-                ),
-                wTextButton(
-                  onPressed: () {},
-                  text: "Cancel",
-                  color: AppColor.warning,
-                ),
-              ],
-            ),
-          ],
-        ),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    height: height * .80,
+                    width: constraints.maxWidth,
+                    color: AppColor.info,
+                    child: _cameraBuilder(),
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: _textDisplayCameraOverlay != ''
+                        ? Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              "$_textDisplayCameraOverlay",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 40,
+                              ),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-
   Widget _cameraBuilder() {
     if (_cameraController == null) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_cameraController!.value.hasError) {
@@ -157,9 +142,7 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
     }
 
     if (!_cameraController!.value.isInitialized) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     return CameraPreview(_cameraController!);
@@ -177,65 +160,76 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
         backgroundColor: color,
         foregroundColor: colorForeGround,
       ),
-      child: Text(text)
+      child: Text(text),
     );
   }
 
-  Future<void> _startRecording() async{
-    if(_cameraController == null) return;
-    if(!_cameraController!.value.isInitialized) return;
-    if(_cameraController!.value.isRecordingVideo) return;
+  Future<void> _startRecording() async {
+    if (_cameraController == null) return;
+    if (!_cameraController!.value.isInitialized) return;
+    if (_cameraController!.value.isRecordingVideo) return;
 
-    try{
+    try {
       await _cameraController!.startVideoRecording();
       setState(() {
         _isRecording = true;
+        backgroundColor = AppColor.highlight;
       });
-    }catch(e) {
+    } catch (e) {
       debugPrint('Start recording error: $e');
     }
   }
 
   Future<void> _stopRecording() async {
-    if(_cameraController == null) return;
-    if(!_cameraController!.value.isRecordingVideo) return;
+    if (_cameraController == null) return;
+    if (!_cameraController!.value.isRecordingVideo) return;
     _timer?.cancel();
 
-    try{
+    try {
       final XFile file = await _cameraController!.stopVideoRecording();
       setState(() {
         _secondsLeft = 0;
+        _isRecording = false;
+        _isRecordingFinished = true;
       });
 
       final savePath = await _getFilePath();
       await file.saveTo(savePath);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Video saved at:\n$savePath'))
-      );
-    }catch(e) {
+      if(!mounted) return;
+
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.showSnackBar(SnackBar(content: Text('Video saved at:\n$savePath')));
+      Future.delayed(const Duration(seconds: 2));
+
+      if(!mounted) return;
+      context.push('/landing-page');
+
+    } catch (e) {
       debugPrint('Stop recording error: $e');
     }
   }
 
-
   void _startPreparationCountdown() {
     final videoRecordingSetting = Hive.box(Storage.videoRecordingSetting);
-    final preparationDuration = videoRecordingSetting.get('preparationDuration', defaultValue: 8);
+    final preparationDuration = videoRecordingSetting.get(
+      'preparationDuration',
+      defaultValue: 8,
+    );
     _secondsLeft = preparationDuration;
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if(_secondsLeft <= 0) {
+      if (_secondsLeft <= 0) {
         setState(() {
           _textDisplayCameraOverlay = "";
         });
         timer.cancel();
 
         _startCapturingCountdown();
-      }else {
+      } else {
         setState(() {
           _secondsLeft--;
-          if(_secondsLeft <= 3 && _secondsLeft >= 1) {
+          if (_secondsLeft <= 3 && _secondsLeft >= 1) {
             _textDisplayCameraOverlay = "Ready $_secondsLeft s";
           } else {
             _textDisplayCameraOverlay = "$_secondsLeft";
@@ -247,25 +241,25 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
 
   void _startCapturingCountdown() {
     final videoRecordingSetting = Hive.box(Storage.videoRecordingSetting);
-    final preparationDuration = videoRecordingSetting.get('maxRecordingDuration');
+    final preparationDuration = videoRecordingSetting.get(
+      'maxRecordingDuration',
+    );
     _secondsLeft = preparationDuration;
     _startRecording();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if(_secondsLeft <= 0) {
+      if (_secondsLeft <= 0) {
         setState(() {
           _textDisplayCameraOverlay = "";
         });
-        _isRecordingFinished = true;
         timer.cancel();
         _stopRecording();
-      }else {
+      } else {
         setState(() {
           _secondsLeft--;
-          if(_secondsLeft <= 3 && _secondsLeft >= 1) {
+          if (_secondsLeft <= 3 && _secondsLeft >= 1) {
             _textDisplayCameraOverlay = "$_secondsLeft";
-          } else {
-          }
+          } else {}
         });
       }
     });
@@ -275,17 +269,8 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
     final dir = await getApplicationDocumentsDirectory();
     final filePath = path.join(
       dir.path,
-      'video_${DateTime.now().millisecondsSinceEpoch}.mp4'
+      'video_${DateTime.now().millisecondsSinceEpoch}.mp4',
     );
     return filePath;
-  }
-
-  void _save() {}
-  void _retake() {}
-  void _cancel() {}
-
-  void _deleteFile() {}
-  void _playFile() {
-
   }
 }

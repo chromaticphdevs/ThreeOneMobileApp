@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
 import 'package:menderapp/core/configurations/storage.dart';
 import 'package:menderapp/core/theme/app_asset_files.dart';
+import 'package:menderapp/core/theme/app_color.dart';
 import 'package:menderapp/core/widgets/app_button.dart';
 import 'package:menderapp/core/widgets/app_button_text.dart';
 import 'package:menderapp/core/widgets/app_scaffold.dart';
@@ -24,7 +25,7 @@ class _LoginPage extends ConsumerState<LoginPage>{
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  final companyBrandingSetting = Hive.box(Storage.companyBranding);
+  final brandingSetting = Hive.box(Storage.companyBranding);
   final userCredentialSetting = Hive.box(Storage.userCredentials);
 
   final ImageService _imageService = ImageService();
@@ -40,6 +41,18 @@ class _LoginPage extends ConsumerState<LoginPage>{
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      title: "",
+      bottomNavigationBar: Container(
+        alignment: Alignment.center,
+        padding: EdgeInsetsGeometry.all(5),
+        height: 50,
+        color: AppColor.primary,
+        child: Text(brandingSetting.get('companyName', defaultValue: 'Company Name is not set'),
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: AppColor.white
+          ),),
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -67,7 +80,7 @@ class _LoginPage extends ConsumerState<LoginPage>{
     final credential = userCredentialSetting.get('credential');
     if(_usernameController.text == credential['username']) {
       if(_passwordController.text == credential['password']) {
-        context.push('/landing-page');
+        context.push('/setting');
       }
     }
     _passwordController.text = '';

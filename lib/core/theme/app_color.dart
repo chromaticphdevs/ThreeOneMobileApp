@@ -7,10 +7,11 @@ class AppColor {
 
   static const warning = Color(0xFFE67F4C);
   static const danger = Color(0xFFB30000);
+  static const highlight = Color(0xFFF0E34C);
 
   static const black = Color(0xFF000000);
   static const grey = Color(0xFF919191);
-  static const grey01 = Color(0xFFF1F1F1);
+  static const grey01 = Color(0xFFE4E4E4);
   static const textFieldBg = Color(0xFFEEEEEE);
   static const white = Color(0xFFFFFFFF);
 
