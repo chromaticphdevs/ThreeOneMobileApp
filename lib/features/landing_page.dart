@@ -183,7 +183,7 @@ class _LandingPage extends ConsumerState<LandingPage> {
   }
 
   void _login() {
-    final credential = userCredentialSetting.get('credential');
+    final credential = userCredentialSetting.get('credentials');
     if(usernameController.text == credential['username']) {
       if(passwordController.text == credential['password']) {
         context.push('/setting');

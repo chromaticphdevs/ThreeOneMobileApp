@@ -213,8 +213,8 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
   void _startPreparationCountdown() {
     final videoRecordingSetting = Hive.box(Storage.videoRecordingSetting);
     final preparationDuration = videoRecordingSetting.get(
-      'preparationDuration',
-      defaultValue: 8,
+      'videoPreparationDuration',
+      defaultValue: 4,
     );
     _secondsLeft = preparationDuration;
 

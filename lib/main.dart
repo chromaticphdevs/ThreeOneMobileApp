@@ -23,7 +23,7 @@ void main() async{
   }
 
   if(credentialSetting.isEmpty) {
-    await credentialSetting.put('credential', {
+    await credentialSetting.put('credentials', {
       'username': 'admin',
       'password' : '12345'
     });

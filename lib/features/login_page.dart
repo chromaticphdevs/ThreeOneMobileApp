@@ -82,7 +82,7 @@ class _LoginPage extends ConsumerState<LoginPage>{
   }
 
   void _login() {
-    final credential = userCredentialSetting.get('credential');
+    final credential = userCredentialSetting.get('credentials');
     String messageLocal = '';
     if(_usernameController.text == credential['username']) {
       if(_passwordController.text == credential['password']) {

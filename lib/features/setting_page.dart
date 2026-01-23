@@ -26,6 +26,7 @@ class SettingPage extends ConsumerStatefulWidget {
 
 class _SettingPage extends ConsumerState<SettingPage> {
   final _videoDurationController = TextEditingController();
+  final _videoPreparationDurationController = TextEditingController();
   final _googleDriveLinkController = TextEditingController();
 
   final _textOfTheDayController = TextEditingController();
@@ -277,7 +278,16 @@ class _SettingPage extends ConsumerState<SettingPage> {
                       controller: _videoDurationController,
                       name: "video_duration",
                       inputType: TextInputType.number,
-                      placeholder: "Video Duration",
+                      placeholder: "Duration in seconds",
+                    ),
+                  ),
+                  AppFormGroup(
+                    label: "Preparation Duration",
+                    child: AppTextField(
+                      controller: _videoPreparationDurationController,
+                      name: "preparation_duration",
+                      inputType: TextInputType.number,
+                      placeholder: "Duration in seconds",
                     ),
                   ),
 
@@ -358,6 +368,8 @@ class _SettingPage extends ConsumerState<SettingPage> {
       _googleDriveLinkController.text,
     );
 
+    await videoRecordingSetting.put("videoPreparationDuration", int.parse(_videoPreparationDurationController.text));
+
     if(!mounted) return;
     Fluttertoast.showToast(
       msg: 'Video Setting Saved',
@@ -390,6 +402,11 @@ class _SettingPage extends ConsumerState<SettingPage> {
     _videoDurationController.text = videoRecordingSetting
         .get("maxRecordingDuration", defaultValue: '')
         .toString();
+
+    _videoPreparationDurationController.text = videoRecordingSetting
+        .get("videoPreparationDuration", defaultValue: '')
+        .toString();
+
     _googleDriveLinkController.text = videoRecordingSetting
         .get("googleDrinkLink", defaultValue: '')
         .toString();
@@ -405,7 +422,8 @@ class _SettingPage extends ConsumerState<SettingPage> {
         .get('companyName', defaultValue: '')
         .toString();
 
-    _usernameController.text = credentialSetting.get('username').toString();
+    final credential = credentialSetting.get('credentials');
+    _usernameController.text = credential['username'];
   }
 
   Future<XFile?> _initImagePicker() async {
@@ -531,7 +549,10 @@ class _SettingPage extends ConsumerState<SettingPage> {
   Future<void> _saveCredentials() async {
     final username = _usernameController.text;
     final password = _passwordController.text;
-    Map<String, String> userCredential = {};
+    Map<String, String> userCredential = {
+      'username' : username,
+      'password' : password
+    };
     String localMessage = "";
 
     if (username.isNotEmpty && username.length > 4) {
@@ -552,13 +573,6 @@ class _SettingPage extends ConsumerState<SettingPage> {
     } else {
       localMessage = "Credentials Updated";
     }
-
-    print([
-      _passwordController.text,
-      _usernameController.text,
-      userCredential
-    ]);
-
 
     Fluttertoast.showToast(
       msg: localMessage,

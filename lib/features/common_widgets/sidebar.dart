@@ -10,6 +10,13 @@ Widget buildSidebar(BuildContext context) {
         child: Text('Menu', style: TextStyle(fontSize: 24, color: Colors.white)),
       ),
       ListTile(
+        title: Text("Gdrive Uploader"),
+        onTap: () {
+          context.go('/gdrive-uploader');
+          Navigator.of(context).pop();
+        },
+      ),
+      ListTile(
         title: Text("Settings"),
         onTap: () {
           context.go('/setting'); // GoRouter navigation
