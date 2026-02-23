@@ -17,7 +17,7 @@ void main() async{
   final videoRecordingSetting = Hive.box(Storage.videoRecordingSetting);
   final credentialSetting = Hive.box(Storage.userCredentials);
 
-  if(videoRecordingSetting.containsKey('maxRecordingDuration')) {
+  if(videoRecordingSetting.isEmpty) {
     await videoRecordingSetting.put('maxRecordingDuration', 15);
     await videoRecordingSetting.put('preparationDuration', 5);
   }

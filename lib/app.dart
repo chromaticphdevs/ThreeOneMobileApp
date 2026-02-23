@@ -54,11 +54,6 @@ class MyApp extends ConsumerWidget{
           bodyMedium: TextStyle(color: Colors.black)
         ),
         brightness: Brightness.light,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.white,
-          brightness: Brightness.light,
-          onSurface: Colors.black,
-        ),
         appBarTheme: const AppBarTheme(
           iconTheme: IconThemeData(color: Colors.black),
           actionsIconTheme: IconThemeData(color: Colors.white),
@@ -70,22 +65,7 @@ class MyApp extends ConsumerWidget{
         ),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.black,
-          brightness: Brightness.dark,
-          onSurface: Colors.white,
-        ),
-        appBarTheme: const AppBarTheme(
-          iconTheme: IconThemeData(color: Colors.black),
-          actionsIconTheme: IconThemeData(color: Colors.black),
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
-
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
       routerConfig: router,
     );

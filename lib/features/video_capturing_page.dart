@@ -1,7 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 import 'package:menderapp/core/theme/app_text_styles.dart';
+import 'package:menderapp/core/widgets/app_button.dart';
+import 'package:menderapp/core/widgets/app_form_group.dart';
+import 'package:menderapp/core/widgets/app_text_field.dart';
+import 'package:menderapp/features/services/image_service.dart';
 import 'package:path/path.dart' as path;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -23,19 +28,26 @@ class VideoCapturingPage extends ConsumerStatefulWidget {
 class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
   CameraController? _cameraController;
   late CameraDescription _frontCamera;
+  final userCredentialSetting = Hive.box(Storage.userCredentials);
 
   bool _isRecording = false;
   bool _isRecordingFinished = false;
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
 
   Color? backgroundColor = Colors.white;
   Timer? _timer;
   int _secondsLeft = 0;
   String _textDisplayCameraOverlay = '';
   final promotionSetting = Hive.box(Storage.promotionSetting);
+  final _imageService = ImageService();
+
+  File? previewLogo;
   @override
   void initState() {
     _initializeCamera();
     _startPreparationCountdown();
+    loadImages();
     // TODO: implement initState
     super.initState();
   }
@@ -68,28 +80,44 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
   Widget build(BuildContext context) {
     return AppScaffold(
       backgroundColor: backgroundColor,
-      title: "Video Recording page",
-      sidebar: buildSidebar(context),
+      title: "",
+      sidebar: Container(
+        padding: EdgeInsetsGeometry.all(12),
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+                width: 150,
+                height: 150,
+                child: previewLogo == null ? SizedBox.shrink() :
+                Image(image: FileImage(previewLogo!))
+            ),
+            SizedBox(height: 10,),
+
+            AppFormGroup(label: "Username", child: AppTextField(controller: usernameController, name: 'username', inputType: TextInputType.text),),
+            AppFormGroup(label: "Password",
+              child: AppTextField(controller: passwordController, name: 'password',
+                inputType: TextInputType.text, obscureText: true,),),
+            AppButton(content: Text("Authenticate"), onPressed: _login)
+          ],
+        ),
+      ),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final height = constraints.maxHeight;
           return Column(
             children: [
-              if(_isRecording) ... [
-                Text("$_secondsLeft", style: AppTextStyles.formTitle,)
-              ],
               Stack(
-                alignment: Alignment.center,
+                alignment: Alignment.bottomRight,
                 children: [
                   Container(
-                    height: height * .80,
-                    width: constraints.maxWidth,
-                    color: AppColor.info,
+                    color: AppColor.white,
                     child: _cameraBuilder(),
                   ),
                   Align(
-                    alignment: Alignment.center,
-                    child: _textDisplayCameraOverlay != ''
+                    alignment: Alignment.bottomRight,
+                    child: _secondsLeft != ''
                         ? Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
@@ -97,10 +125,10 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              "$_textDisplayCameraOverlay",
+                              "$_secondsLeft",
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 40,
+                                fontSize: 70,
                               ),
                             ),
                           )
@@ -173,10 +201,9 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
       await _cameraController!.startVideoRecording();
       setState(() {
         _isRecording = true;
-        backgroundColor = AppColor.highlight;
+        backgroundColor = AppColor.white;
       });
     } catch (e) {
-      debugPrint('Start recording error: $e');
     }
   }
 
@@ -195,18 +222,29 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
 
       final savePath = await _getFilePath();
       await file.saveTo(savePath);
-
       if(!mounted) return;
 
       final messenger = ScaffoldMessenger.of(context);
-      messenger.showSnackBar(SnackBar(content: Text('Video Saved')));
-      Future.delayed(const Duration(seconds: 2));
-
-      if(!mounted) return;
+      // Future.delayed(const Duration(seconds: 5));
+      messenger.showSnackBar(
+        SnackBar(
+          duration: Duration(seconds: 5),
+          backgroundColor: Colors.yellow,
+          content: Text.rich(
+            TextSpan(
+              style: const TextStyle(color: Colors.black),
+              children: [
+                TextSpan(text: 'VIDEO SAVED \n', style: TextStyle(fontWeight: FontWeight.bold)),
+                TextSpan(text: 'Thank you for sharing your dedication')
+              ]
+            ),
+            textAlign: TextAlign.center,
+          ),
+        )
+      );
       context.push('/landing-page');
 
     } catch (e) {
-      debugPrint('Stop recording error: $e');
     }
   }
 
@@ -217,14 +255,12 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
       defaultValue: 4,
     );
     _secondsLeft = preparationDuration;
-
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_secondsLeft <= 0) {
         setState(() {
           _textDisplayCameraOverlay = "";
         });
         timer.cancel();
-
         _startCapturingCountdown();
       } else {
         setState(() {
@@ -272,5 +308,24 @@ class _VideoCapturingPage extends ConsumerState<VideoCapturingPage> {
       'video_${DateTime.now().millisecondsSinceEpoch}.mp4',
     );
     return filePath;
+  }
+
+  Future<void> loadImages() async {
+    final logo = await _imageService.loadPhoto(Storage.companyBranding, 'companyLogo');
+    if(logo == null) return;
+
+    setState(() {
+      previewLogo = logo;
+    });
+  }
+
+  void _login() {
+    final credential = userCredentialSetting.get('credentials');
+    if(usernameController.text == credential['username']) {
+      if(passwordController.text == credential['password']) {
+        context.push('/setting');
+      }
+    }
+    passwordController.text = '';
   }
 }

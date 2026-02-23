@@ -23,6 +23,7 @@ class LandingPage extends ConsumerStatefulWidget {
 }
 
 class _LandingPage extends ConsumerState<LandingPage> {
+  final videoRecordingSetting = Hive.box(Storage.videoRecordingSetting);
   final promotionSetting = Hive.box(Storage.promotionSetting);
   final brandingSetting = Hive.box(Storage.companyBranding);
   final userCredentialSetting = Hive.box(Storage.userCredentials);
@@ -77,11 +78,12 @@ class _LandingPage extends ConsumerState<LandingPage> {
         alignment: Alignment.center,
         padding: EdgeInsetsGeometry.all(5),
         height: 50,
-        color: AppColor.primary,
+        color: AppColor.white,
         child: Text(brandingSetting.get('companyName', defaultValue: 'Company Name is not set'),
             textAlign: TextAlign.center,
         style: TextStyle(
-          color: AppColor.white
+          color: AppColor.black,
+          fontWeight: FontWeight.bold
         ),),
       ),
       child: LayoutBuilder(
@@ -137,15 +139,15 @@ class _LandingPage extends ConsumerState<LandingPage> {
                     alignment: Alignment.center,
                     height: deviceHeight * .20,
                     child: InkWell(
-                      child: CircleAvatar(radius: 50, child: Text("Start"),
-                        backgroundColor: AppColor.primary, foregroundColor: AppColor.white,),
+                      child: CircleAvatar(radius: 50,
+                        backgroundColor: AppColor.primary, foregroundColor: AppColor.white, child: const Text('START'),),
                       onTap: () {
-                        if(_videos.length > 5) {
+                        if(videoRecordingSetting.get('maxRecordingDuration') == '' || videoRecordingSetting.get('maxRecordingDuration') < 1.0) {
                           Fluttertoast.showToast(
-                            msg: "App version is currently limited to save 5 videos",
+                            msg: "Set max recording duration in settings first",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 2,
+                            timeInSecForIosWeb: 5,
                             backgroundColor: Colors.black87,
                             textColor: Colors.white,
                             fontSize: 14.0,
